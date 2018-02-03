@@ -30,7 +30,7 @@ app.use(
       debug    : false,
       encrypt: true,
       ssl : {
-        ca: fs.readFileSync('C:/Users/submi/Desktop/jan_shauch/BaltimoreCyberTrustRoot.crt.pem')
+        ca: fs.readFileSync('./BaltimoreCyberTrustRoot.crt.pem')
       }
     },'request')
 );
