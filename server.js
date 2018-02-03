@@ -32,7 +32,7 @@ app.use(expressValidator());
 // // static pages
 
 app.get('/',function(req,res){
-    res.send('Hello Fuckers !!!!!!!!');
+    res.send('Good testing now. Final before moving to database setup');
     res.render('404');
 });
 
