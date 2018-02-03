@@ -32,6 +32,7 @@ app.use(expressValidator());
 // // static pages
 
 app.get('/',function(req,res){
+    res.send('Hello Fuckers !!!!!!!!');
     res.render('404');
 });
 
@@ -450,7 +451,7 @@ var router = express.Router();
 app.use(router);
 
 //start Server
-var server = app.listen(3000,function(){
+var server = app.listen(process.env.PORT || 1337,function(){
 
    console.log("Listening to port %s",server.address().port);
 
