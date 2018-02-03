@@ -229,26 +229,11 @@ forgotAccount.get(function(req,res,next){
 // });
 
 
-home.get(function(req,res, next){
-    req.getConnection(function(err,conn){
 
-    if (err){
-      console.log("Cannot Connect");
-      return next("Cannot Connect");
-    } 
+var home = router.route('/');
 
-    var query = conn.query("SELECT * FROM janshauch.authority;",function(err,rows){
-
-        if(err){
-            console.log(err);
-            return next("Mysql error, check your query");
-        }
-
-        console.log(rows);
-        //if user not found
-        res.send('still working.....');
-    });
-  });
+home.get(function(req,res,next){
+  res.render('index');
 });
 
 // //get data to update
@@ -274,7 +259,6 @@ home.get(function(req,res, next){
 
 //             res.render('edit',{title:"Edit user",data:rows});
 //         });
-
 //     });
 
 // });
