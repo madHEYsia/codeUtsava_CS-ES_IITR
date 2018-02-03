@@ -4,6 +4,8 @@ var express  = require('express'),
     app = express(),
     expressValidator = require('express-validator');
 
+var fs = require('fs'),
+    https = require('https');
 
 /*Set EJS template Engine*/
 app.set('views','./views');
@@ -20,39 +22,30 @@ var connection  = require('express-myconnection'),
 
 app.use(
     connection(mysql,{
-        host     : 'janshauch.mysql.database.azure.com',
-        user     : 'madheysia@janshauch',
-        password : 'Shubham@07',
-        database : 'janshauch',
-        debug    : true //set true if you wanna see debug logger
+      host     : 'janshauch.mysql.database.azure.com',
+      user     : 'madheysia@janshauch',
+      password : 'Shubham@07',
+      database : 'janshauch',
+      port: 3306,
+      debug    : false,
+      encrypt: true,
+      ssl : {
+        ca: fs.readFileSync('C:/Users/submi/Desktop/jan_shauch/BaltimoreCyberTrustRoot.crt.pem')
+      }
     },'request')
 );
 
-console.log(connection);
+// var conn = mysql.createConnection({
+//   host: "{host_name}", 
+//   user: "{your_username}", 
+//   password: {your_password}, 
+//   database: {your_database}, 
+//   port: 3306, 
+//   ssl:{ca:fs.readFileSync({ca-cert filename})}
+// });
 
 // // ------------------------------------------------------------
 // // static pages
-
-app.get('/',function(req,res){
-    req.getConnection(function(err,conn){
-
-    if (err) return next("Cannot Connect");
-
-    var query = conn.query("SELECT * FROM janshauch.authority;",function(err,rows){
-
-        if(err){
-            console.log(err);
-            return next("Mysql error, check your query");
-        }
-
-        //if user not found
-        return res.send(rows.length);
-    });
-  });
-
-  res.send('still working');
-  res.render('404');
-});
 
 // app.get('/faq',function(req,res){
 //     res.render('faq');
@@ -71,33 +64,48 @@ app.get('/',function(req,res){
 //RESTful route
 var router = express.Router();
 
-// /*------------------------------------------------------
-// *  This is router middleware,invoked everytime we hit url
-// *  we can use this for doing validation,authetication
-// --------------------------------------------------------*/
-// router.use(function(req, res, next) {
-//     console.log(req.method, req.url);
-//     next();
-// });
+/*------------------------------------------------------
+*  This is router middleware,invoked everytime we hit url
+*  we can use this for doing validation,authetication
+--------------------------------------------------------*/
+router.use(function(req, res, next) {
+    console.log(req.method, req.url);
+    next();
+});
 
 
-// // -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
-// var home = router.route('/');
+var home = router.route('/');
 
-// /*------------------------------------------------------
-// route.all is extremely useful. you can use it to do
-// stuffs for specific routes. for example you need to do
-// a validation everytime route /api/user/:user_id it hit.
+/*------------------------------------------------------
+route.all is extremely useful. you can use it to do
+stuffs for specific routes. for example you need to do
+a validation everytime route /api/user/:user_id it hit.
 
-// remove curut2.all() if you dont want it
-// ------------------------------------------------------*/
+------------------------------------------------------*/
 
-// home.all(function(req,res,next){
-//     console.log("You need to smth about home Route ? Do it here");
-//     console.log(req.params);
-//     next();
-// });
+home.get(function(req,res, next){
+    req.getConnection(function(err,conn){
+
+    if (err){
+      console.log("Cannot Connect");
+      return next("Cannot Connect");
+    } 
+
+    var query = conn.query("SELECT * FROM janshauch.authority;",function(err,rows){
+
+        if(err){
+            console.log(err);
+            return next("Mysql error, check your query");
+        }
+
+        console.log(rows);
+        //if user not found
+        res.send('still working.....');
+    });
+  });
+});
 
 // //get data to update
 // home.get(function(req,res,next){
