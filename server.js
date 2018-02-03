@@ -14,25 +14,27 @@ app.use(bodyParser.urlencoded({ extended: true })); //support x-www-form-urlenco
 app.use(bodyParser.json());
 app.use(expressValidator());
 
-// /*MySql connection*/
-// var connection  = require('express-myconnection'),
-//     mysql = require('mysql');
+/*MySql connection*/
+var connection  = require('express-myconnection'),
+    mysql = require('mysql');
 
-// app.use(
-//     connection(mysql,{
-//         host     : 'localhost',
-//         user     : 'root',
-//         password : 'root',
-//         database : 'classroomshoppers',
-//         debug    : false //set true if you wanna see debug logger
-//     },'request')
-// );
+app.use(
+    connection(mysql,{
+        host     : 'janshauch.mysql.database.azure.com',
+        user     : 'madheysia@janshauch',
+        password : 'Shubham@07',
+        database : 'janshauch',
+        debug    : true //set true if you wanna see debug logger
+    },'request')
+);
+
+console.log(connection);
 
 // // ------------------------------------------------------------
 // // static pages
 
 app.get('/',function(req,res){
-    res.send('Good testing now. Final before moving to database setup');
+    res.send('still working');
     res.render('404');
 });
 
