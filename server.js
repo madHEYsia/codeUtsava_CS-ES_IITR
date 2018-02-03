@@ -176,6 +176,59 @@ loginAcc.get(function(req,res,next){
 
 
 
+var forgotAccount = router.route('/forgot-password');
+
+forgotAccount.get(function(req,res,next){
+  res.render('forgot-password');
+});
+
+// forgotAccount.post(function(req,res,next){
+
+//     //server side validation*********
+//     req.assert('firstName','First Name is required').matches(/[^\s\\]/);
+//     var errors = req.validationErrors();
+//     if(errors){
+//         res.status(422).json(errors);
+//         return;
+//     }
+
+//     req.assert('emailId','A valid email is required').isEmail();
+//     errors = req.validationErrors();
+//     if(errors){
+//         res.status(422).json(errors);
+//         return;
+//     }
+
+//     req.assert('password','Enter a password 6 - 20').len(6,20);
+//     errors = req.validationErrors();
+//     if(errors){
+//         res.status(422).json(errors);
+//         return;
+//     }
+
+//     //get data
+//     var data = {
+//         name:req.body.firstName+req.body.lastName,
+//         emailId:req.body.emailId,
+//         password:req.body.password
+//      };
+
+//     //inserting into mysql
+//     req.getConnection(function (err, conn){
+//         if (err) return next("Cannot Connect");
+
+//         var query = conn.query("INSERT INTO classroomshoppers.userdetail set ? ", data, function(err, rows){
+//            if(err){
+//                 console.log(err);
+//                 return next("Mysql error, check your query");
+//            }
+
+//            res.sendStatus(200);
+//         });
+//      });
+// });
+
+
 home.get(function(req,res, next){
     req.getConnection(function(err,conn){
 
