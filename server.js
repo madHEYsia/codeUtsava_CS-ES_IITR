@@ -35,15 +35,6 @@ app.use(
     },'request')
 );
 
-// var conn = mysql.createConnection({
-//   host: "{host_name}", 
-//   user: "{your_username}", 
-//   password: {your_password}, 
-//   database: {your_database}, 
-//   port: 3306, 
-//   ssl:{ca:fs.readFileSync({ca-cert filename})}
-// });
-
 // // ------------------------------------------------------------
 // // static pages
 
@@ -84,6 +75,106 @@ stuffs for specific routes. for example you need to do
 a validation everytime route /api/user/:user_id it hit.
 
 ------------------------------------------------------*/
+
+var createAcc = router.route('/signup');
+
+createAcc.get(function(req,res,next){
+  res.render('register');
+});
+
+// createAcc.post(function(req,res,next){
+
+//     //server side validation*********
+//     req.assert('firstName','First Name is required').matches(/[^\s\\]/);
+//     var errors = req.validationErrors();
+//     if(errors){
+//         res.status(422).json(errors);
+//         return;
+//     }
+
+//     req.assert('emailId','A valid email is required').isEmail();
+//     errors = req.validationErrors();
+//     if(errors){
+//         res.status(422).json(errors);
+//         return;
+//     }
+
+//     req.assert('password','Enter a password 6 - 20').len(6,20);
+//     errors = req.validationErrors();
+//     if(errors){
+//         res.status(422).json(errors);
+//         return;
+//     }
+
+//     //get data
+//     var data = {
+//         name:req.body.firstName+req.body.lastName,
+//         emailId:req.body.emailId,
+//         password:req.body.password
+//      };
+
+//     //inserting into mysql
+//     req.getConnection(function (err, conn){
+//         if (err) return next("Cannot Connect");
+
+//         var query = conn.query("INSERT INTO classroomshoppers.userdetail set ? ", data, function(err, rows){
+//            if(err){
+//                 console.log(err);
+//                 return next("Mysql error, check your query");
+//            }
+
+//            res.sendStatus(200);
+//         });
+//      });
+// });
+
+
+var loginAcc = router.route('/signin');
+
+loginAcc.get(function(req,res,next){
+  res.render('login');
+});
+
+// loginAcc.put(function(req,res,next){
+//   console.error("inside post--------------");
+
+//   req.assert('emailId','A valid email is required').isEmail();
+//   errors = req.validationErrors();
+//   if(errors){
+//       res.status(422).json(errors);
+//       return;
+//   }
+
+//   req.assert('password','Empty password not alllowed').notEmpty();
+//   errors = req.validationErrors();
+//   if(errors){
+//       res.status(422).json(errors);
+//       return;
+//   }
+
+//   var emailId = req.body.emailId;
+//   var password = req.body.password;
+
+//   req.getConnection(function(err,conn){
+//       if (err){
+//         console.log(err);
+//         return next("Cannot Connect");
+//       }
+
+//       var query = conn.query("SELECT name FROM classroomshoppers.userdetail WHERE emailId = '"+emailId+"' and password = '"+password+"' ", function(err,rows){
+//           if(err){
+//             console.log(err);
+//               return next("Mysql error, check your query");
+//           }
+//           if(rows.length==0)
+//             res.status(400).json("Invalid emailID - password");
+//           else
+//           res.status(200).json(rows[0].name);
+//        });
+//   });
+// });
+
+
 
 home.get(function(req,res, next){
     req.getConnection(function(err,conn){
@@ -200,105 +291,6 @@ home.get(function(req,res, next){
 
 // //      });
 // // });
-
-// var createAcc = router.route('/create-account');
-
-// createAcc.get(function(req,res,next){
-//   res.render('create-account');
-// });
-
-// createAcc.post(function(req,res,next){
-
-//     //server side validation*********
-//     req.assert('firstName','First Name is required').matches(/[^\s\\]/);
-//     var errors = req.validationErrors();
-//     if(errors){
-//         res.status(422).json(errors);
-//         return;
-//     }
-
-//     req.assert('emailId','A valid email is required').isEmail();
-//     errors = req.validationErrors();
-//     if(errors){
-//         res.status(422).json(errors);
-//         return;
-//     }
-
-//     req.assert('password','Enter a password 6 - 20').len(6,20);
-//     errors = req.validationErrors();
-//     if(errors){
-//         res.status(422).json(errors);
-//         return;
-//     }
-
-//     //get data
-//     var data = {
-//         name:req.body.firstName+req.body.lastName,
-//         emailId:req.body.emailId,
-//         password:req.body.password
-//      };
-
-//     //inserting into mysql
-//     req.getConnection(function (err, conn){
-//         if (err) return next("Cannot Connect");
-
-//         var query = conn.query("INSERT INTO classroomshoppers.userdetail set ? ", data, function(err, rows){
-//            if(err){
-//                 console.log(err);
-//                 return next("Mysql error, check your query");
-//            }
-
-//            res.sendStatus(200);
-//         });
-//      });
-// });
-
-// var loginAcc = router.route('/login-account');
-
-// loginAcc.get(function(req,res,next){
-//   res.render('login-account');
-// });
-
-// loginAcc.put(function(req,res,next){
-//   console.error("inside post--------------");
-
-//   req.assert('emailId','A valid email is required').isEmail();
-//   errors = req.validationErrors();
-//   if(errors){
-//       res.status(422).json(errors);
-//       return;
-//   }
-
-//   req.assert('password','Empty password not alllowed').notEmpty();
-//   errors = req.validationErrors();
-//   if(errors){
-//       res.status(422).json(errors);
-//       return;
-//   }
-
-//   var emailId = req.body.emailId;
-//   var password = req.body.password;
-
-//   req.getConnection(function(err,conn){
-//       if (err){
-//         console.log(err);
-//         return next("Cannot Connect");
-//       }
-
-//       var query = conn.query("SELECT name FROM classroomshoppers.userdetail WHERE emailId = '"+emailId+"' and password = '"+password+"' ", function(err,rows){
-//           if(err){
-//             console.log(err);
-//               return next("Mysql error, check your query");
-//           }
-//           if(rows.length==0)
-//             res.status(400).json("Invalid emailID - password");
-//           else
-//           res.status(200).json(rows[0].name);
-//        });
-//   });
-// });
-
-
 
 
 // // -----------------------------------------------------------------------------
