@@ -31,9 +31,9 @@ app.use(expressValidator());
 // // ------------------------------------------------------------
 // // static pages
 
-// app.get('/404',function(req,res){
-//     res.render('404');
-// });
+app.get('/',function(req,res){
+    res.render('404');
+});
 
 // app.get('/faq',function(req,res){
 //     res.render('faq');
@@ -49,8 +49,8 @@ app.use(expressValidator());
 
 // // ------------------------------------------------------------
 
-// //RESTful route
-// var router = express.Router();
+//RESTful route
+var router = express.Router();
 
 // /*------------------------------------------------------
 // *  This is router middleware,invoked everytime we hit url
