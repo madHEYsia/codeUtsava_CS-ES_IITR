@@ -34,8 +34,24 @@ console.log(connection);
 // // static pages
 
 app.get('/',function(req,res){
-    res.send('still working');
-    res.render('404');
+    req.getConnection(function(err,conn){
+
+    if (err) return next("Cannot Connect");
+
+    var query = conn.query("SELECT * FROM janshauch.authority;",function(err,rows){
+
+        if(err){
+            console.log(err);
+            return next("Mysql error, check your query");
+        }
+
+        //if user not found
+        return res.send(rows.length);
+    });
+  });
+
+  res.send('still working');
+  res.render('404');
 });
 
 // app.get('/faq',function(req,res){
