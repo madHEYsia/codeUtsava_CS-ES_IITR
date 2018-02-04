@@ -116,12 +116,20 @@
 					    <div id="locationField">
 							<input style="height: initial" id="autocomplete" placeholder="Enter a city" type="text" />
 							<form>
-							  <div style="color: #000; padding-bottom: 15px" onclick="onPlaceChanged()">
+							  <div style="color: #000;" onclick="onPlaceChanged()">
 							    <input type="radio" id="type1" name="filter" value="nearest" checked>
 							    	<label for="type1" style="color: #000">Nearest</label>
 							    <input type="radio" id="type2" name="filter" value="rating">
 							    	<label for="type2" style="color: #000">Rating</label>
 							  </div>
+							<i id="isMale" onclick="toggle('isMale')" value="0" class="fa fa-male " style="font-size:24px; cursor:pointer"></i>&ensp;
+							<i id="isFemale"  onclick="toggle('isFemale')" value="0" class="fa fa-female" style="font-size:24px; cursor:pointer"></i>&ensp;
+							<i id="isunisex"  onclick="toggle('isunisex')" value="0" class="fa fa-street-view" style="font-size:24px; cursor:pointer"></i>&ensp;
+							<i id="isAccessible"  onclick="toggle('isAccessible')" value="0" class="fa fa-wheelchair" style="font-size:24px; cursor:pointer"></i>&ensp;
+							<i id="isParking"  onclick="toggle('isParking')" value="0" class="fa fa-car" style="font-size:24px; cursor:pointer"></i>&ensp;
+							<i id="isChanging"  onclick="toggle('isChanging')" value="0" class="fa fa-home" style="font-size:24px; cursor:pointer"></i>&ensp;
+							<!-- <i class="fa fa-bathtub" style="font-size:24px; cursor:pointer"></i>&ensp; -->
+							<i id="isWater"  onclick="toggle('isWater')" value="0" class="fa fa-tint" style="font-size:24px; cursor:pointer"></i>&ensp;
 							</form>
 					    </div>
 
@@ -169,6 +177,87 @@
 					      var countryRestrict = {'country': 'in'};
 					      var MARKER_PATH = 'https://developers.google.com/maps/documentation/javascript/images/marker_green';
 					      var hostnameRegexp = new RegExp('^https?://.+?/');
+
+					      function toggle(iconType){
+					      	debugger;
+				      		if(iconType=='isMale'){
+				      			var attr = document.getElementById('isMale').getAttribute('value');
+				      			if(attr==0){
+					      			$('#isMale').css('color','red');
+					      			document.getElementById("isMale").setAttribute("value", "1");
+				      			}
+				      			else{
+					      			$('#isMale').css('color','black');
+					      			document.getElementById("isMale").setAttribute("value", "0");
+				      			}
+				      		}
+			      			else if (iconType=='isFemale'){
+				      			var attr = document.getElementById('isFemale').getAttribute('value');
+				      			if(attr==0){
+					      			$('#isFemale').css('color','red');
+					      			document.getElementById("isFemale").setAttribute("value", "1");
+				      			}
+				      			else{
+					      			$('#isFemale').css('color','black');
+					      			document.getElementById("isFemale").setAttribute("value", "0");
+				      			}
+				      		}
+			      			else if (iconType=='isunisex'){
+				      			var attr = document.getElementById('isunisex').getAttribute('value');
+				      			if(attr==0){
+					      			$('#isunisex').css('color','red');
+					      			document.getElementById("isunisex").setAttribute("value", "1");
+				      			}
+				      			else{
+					      			$('#isunisex').css('color','black');
+					      			document.getElementById("isunisex").setAttribute("value", "0");
+				      			}
+			      			}
+			      			else if (iconType=='isAccessible'){
+				      			var attr = document.getElementById('isAccessible').getAttribute('value');
+				      			if(attr==0){
+					      			$('#isAccessible').css('color','red');
+					      			document.getElementById("isAccessible").setAttribute("value", "1");
+				      			}
+				      			else{
+					      			$('#isAccessible').css('color','black');
+					      			document.getElementById("isAccessible").setAttribute("value", "0");
+				      			}
+			      			}
+			      			else if (iconType=='isParking'){
+				      			var attr = document.getElementById('isParking').getAttribute('value');
+				      			if(attr==0){
+					      			$('#isParking').css('color','red');
+					      			document.getElementById("isParking").setAttribute("value", "1");
+				      			}
+				      			else{
+					      			$('#isParking').css('color','black');
+					      			document.getElementById("isParking").setAttribute("value", "0");
+				      			}
+			      			}
+			      			else if (iconType=='isChanging'){
+				      			var attr = document.getElementById('isChanging').getAttribute('value');
+				      			if(attr==0){
+					      			$('#isChanging').css('color','red');
+					      			document.getElementById("isChanging").setAttribute("value", "1");
+				      			}
+				      			else{
+					      			$('#isChanging').css('color','black');
+					      			document.getElementById("isChanging").setAttribute("value", "0");
+				      			}
+			      			}
+			      			else if (iconType=='isWater'){
+				      			var attr = document.getElementById('isWater').getAttribute('value');
+				      			if(attr==0){
+					      			$('#isWater').css('color','red');
+					      			document.getElementById("isWater").setAttribute("value", "1");
+				      			}
+				      			else{
+					      			$('#isWater').css('color','black');
+					      			document.getElementById("isWater").setAttribute("value", "0");
+				      			}
+			      			}
+					      }
 
 					      function initMap() {
 					        map = new google.maps.Map(document.getElementById('map'), {
