@@ -263,47 +263,41 @@ home.get(function(req,res,next){
 
 // });
 
-// // //update data
-// // home.put(function(req,res,next){
-// //     var user_id = req.params.user_id;
+var nearby = router.route('/nearby');
 
-// //     //validation
-// //     req.assert('name','Name is required').notEmpty();
-// //     req.assert('email','A valid email is required').isEmail();
-// //     req.assert('password','Enter a password 6 - 20').len(6,20);
+nearby.get(function(req,res,next){
 
-// //     var errors = req.validationErrors();
-// //     if(errors){
-// //         res.status(422).json(errors);
-// //         return;
-// //     }
+    var x = req.query.latitude;
+    var y = req.query.longitude;
+    var z = req.query.filter;
 
-// //     //get data
-// //     var data = {
-// //         name:req.body.name,
-// //         emailId:req.body.email,
-// //         password:req.body.password
-// //      };
+    //inserting into mysql
+    req.getConnection(function (err, conn){
 
-// //     //inserting into mysql
-// //     req.getConnection(function (err, conn){
+        if (err) return next("Cannot Connect");
 
-// //         if (err) return next("Cannot Connect");
+        if(z=='nearest'){
+          var query = conn.query("Select *, (( "+x+" -latitude)*( "+x+" -latitude) + ( "+y+" -longitude)*( "+y+" -longitude)) as distance from janshauch.toilet Where (( "+x+" -latitude)*( "+x+" -latitude) + ( "+y+" -longitude)*( "+y+" -longitude)) < 0.014*0.014 ORDER BY distance desc", function(err, rows){
+           if(err){
+                console.log(err);
+                return next("Mysql error, check your query");
+           }
+          res.send(rows);
+        });
+        }
+        else{
+          var query = conn.query("Select *, (( "+x+" -T.latitude)*( "+x+" -T.latitude) + ( "+y+" -T.longitude)*( "+y+" -T.longitude)) as distance from janshauch.toilet as T, janshauch.feedback as R Where (( "+x+" -T.latitude)*( "+x+" -T.latitude) + ( "+y+" -T.longitude)*( "+y+" -T.longitude)) < 0.014*0.014 AND T.latitude=R.latitude AND T.longitude=R.longitude ORDER BY distance desc", function(err, rows){
+            // Select *, (21.25-T.latitude)*(21.25-T.latitude) + (81.62-T.longitude)*(81.62-T.longitude) as distance from janshauch.toilet as T, janshauch.feedback as R Where (21.25-T.latitude)*             (21.25-T.latitude) + (81.62-T.longitude)*(81.62-T.longitude) <  0.014*0.014 AND T.latitude=R.latitude AND T.longitude=R.longitude ORDER BY distance desc;          
+           if(err){
+                console.log(err);
+                return next("Mysql error, check your query");
+           }
+          res.send(rows);
+        });
+        }
+     });
 
-// //         var query = conn.query("UPDATE t_user set ? WHERE user_id = ? ",[data,user_id], function(err, rows){
-
-// //            if(err){
-// //                 console.log(err);
-// //                 return next("Mysql error, check your query");
-// //            }
-
-// //           res.sendStatus(200);
-
-// //         });
-
-// //      });
-
-// // });
+});
 
 // // //delete data
 // // home.delete(function(req,res,next){

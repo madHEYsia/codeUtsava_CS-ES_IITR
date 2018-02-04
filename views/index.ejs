@@ -13,7 +13,83 @@
 		<link rel="stylesheet" href="/../css/main.css" />
 		<!--[if lte IE 9]><link rel="stylesheet" href="/../css/ie9.css" /><![endif]-->
 		<!--[if lte IE 8]><link rel="stylesheet" href="/../css/ie8.css" /><![endif]-->
-
+		<style>
+      #map {
+        height: 550px;
+      }
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      table {
+        font-size: 12px;
+      }
+      #map {
+        width: initial;
+      }
+      #listing {
+        position: absolute;
+        height: 470px;
+        overflow: auto;
+        top: 50px;
+        cursor: pointer;
+        overflow-x: hidden;
+      }
+      #findhotels {
+        position: relative;
+        text-align: right;
+        width: 100px;
+        font-size: 14px;
+        padding: 4px;
+        z-index: 5;
+        background-color: #fff;
+        color: #000;
+      }
+      #locationField {
+        position: absolute;
+        width: 250px;
+        height: 1.7em;
+        top: 0px;
+        z-index: 5;
+        background-color: #fff;
+        color: #000;
+      }
+      #autocomplete {
+        width: 100%;
+      }
+      #country {
+        width: 100%;
+      }
+      .placeIcon {
+        width: 20px;
+        height: 34px;
+        margin: 4px;
+      }
+      .hotelIcon {
+        width: 24px;
+        height: 24px;
+      }
+      #resultsTable {
+        border-collapse: collapse;
+        width: 240px;
+      }
+      #rating {
+        font-size: 13px;
+        font-family: Arial Unicode MS;
+      }
+      .iw_table_row {
+        height: 18px;
+      }
+      .iw_attribute_name {
+        font-weight: bold;
+        text-align: right;
+      }
+      .iw_table_icon {
+        text-align: right;
+      }
+    </style>
+	<script src="/../js/jquery.min.js"></script>		
 	</head>
 	<body>
 
@@ -36,14 +112,285 @@
 
 				<!-- Intro -->
 					<section id="intro" class="wrapper style1 fullscreen fade-up">
-						<div class="inner">
-							<h1>Hyperspace</h1>
-							<p>Just another fine responsive site template designed by <a href="http://html5up.net">HTML5 UP</a><br />
-							and released for free under the <a href="http://html5up.net/license">Creative Commons</a>.</p>
-							<ul class="actions">
-								<li><a href="#one" class="button scrolly">Learn more</a></li>
-							</ul>
-						</div>
+
+					    <div id="locationField">
+							<input style="height: initial" id="autocomplete" placeholder="Enter a city" type="text" />
+							<form>
+							  <div style="color: #000; padding-bottom: 15px" onclick="onPlaceChanged()">
+							    <input type="radio" id="type1" name="filter" value="nearest" checked>
+							    	<label for="type1" style="color: #000">Nearest</label>
+							    <input type="radio" id="type2" name="filter" value="rating">
+							    	<label for="type2" style="color: #000">Rating</label>
+							  </div>
+							</form>
+					    </div>
+
+					    <div id="map"></div>
+
+					    <div id="listing" style="padding-top: 15px">
+					      <table id="resultsTable">
+					        <tbody id="results"></tbody>
+					      </table>
+					    </div>
+
+					    <div style="display: none">
+					      <div id="info-content">
+					        <table>
+					          <tr id="iw-url-row" class="iw_table_row">
+					            <td id="iw-icon" class="iw_table_icon"></td>
+					            <td id="iw-url"></td>
+					          </tr>
+					          <tr id="iw-address-row" class="iw_table_row">
+					            <td class="iw_attribute_name">Address:</td>
+					            <td id="iw-address"></td>
+					          </tr>
+					          <tr id="iw-phone-row" class="iw_table_row">
+					            <td class="iw_attribute_name">Telephone:</td>
+					            <td id="iw-phone"></td>
+					          </tr>
+					          <tr id="iw-rating-row" class="iw_table_row">
+					            <td class="iw_attribute_name">Rating:</td>
+					            <td id="iw-rating"></td>
+					          </tr>
+					          <tr id="iw-website-row" class="iw_table_row">
+					            <td class="iw_attribute_name">Website:</td>
+					            <td id="iw-website"></td>
+					          </tr>
+					        </table>
+					      </div>
+					    </div>
+						<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places"></script>
+					    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyATw7TV-jGA0TIzxchl034Agao263a8wMY&libraries=places&callback=initMap"
+					        async defer></script>
+					    <script>
+					      var map, places, infoWindow;
+					      var markers = [];
+					      var autocomplete;
+					      var countryRestrict = {'country': 'in'};
+					      var MARKER_PATH = 'https://developers.google.com/maps/documentation/javascript/images/marker_green';
+					      var hostnameRegexp = new RegExp('^https?://.+?/');
+
+					      function initMap() {
+					        map = new google.maps.Map(document.getElementById('map'), {
+					          zoom: 10,
+					          center: {lat: 21.25, lng: 81.62},
+					          mapTypeControl: false,
+					          panControl: false,
+					          zoomControl: false,
+					          streetViewControl: false
+					        });
+
+					        infoWindow = new google.maps.InfoWindow({
+					          content: document.getElementById('info-content')
+					        });
+
+					        // Create the autocomplete object and associate it with the UI input control.
+					        // Restrict the search to the default country, and to place type "cities".
+					        autocomplete = new google.maps.places.Autocomplete(
+					            /** @type {!HTMLInputElement} */ (
+					                document.getElementById('autocomplete')), {
+					              types: ['(cities)'],
+					              componentRestrictions: countryRestrict
+					            });
+					        places = new google.maps.places.PlacesService(map);
+
+					        autocomplete.addListener('place_changed', onPlaceChanged);
+					      }
+
+					      // When the user selects a city, get the place details for the city and
+					      // zoom the map in on the city.
+					      function onPlaceChanged() {
+					      	debugger;
+					        var place = autocomplete.getPlace();
+					        if (place.geometry) {
+					          map.panTo(place.geometry.location);
+					          map.setZoom(15);
+					          search();
+					        } else {
+					          document.getElementById('autocomplete').placeholder = 'Enter a city';
+					        }
+					      }
+
+					      // Search for hotels in the selected city, within the viewport of the map.
+					      function search() {
+					        var search = {
+					          bounds: map.getBounds(),
+					          types: ['lodging']
+					        };
+
+					        places.nearbySearch(search, function(results, status) {
+					          if (status === google.maps.places.PlacesServiceStatus.OK) {
+					            clearResults();
+					            clearMarkers();
+					            // Create a marker for each hotel found, and
+					            // assign a letter of the alphabetic to each marker icon.
+					            
+					            var fId = document.getElementById('type1').value;
+
+					            if (document.getElementById('type2').checked) {
+									fId = document.getElementById('type2').value;
+								}
+
+								var data =[];
+
+								geocoder = new google.maps.Geocoder();
+							    var address = document.getElementById("autocomplete").value;
+							    geocoder.geocode( { 'address': address}, function(results, status) {
+							      if (status == google.maps.GeocoderStatus.OK) {
+							      	$.ajax({
+								        url:"/nearby",
+								        type:"get",
+								        async: false,
+								        data:{latitude: results[0].geometry.location.lat(), longitude: results[0].geometry.location.lng(), filter: fId},
+								        success:function(res){
+								            // Check browser support
+								            	data = res;
+									            for (var i = 0; i < data.length; i++) {
+													var markerLetter = String.fromCharCode('A'.charCodeAt(0) + (i % 26));
+													var markerIcon = MARKER_PATH + markerLetter + '.png';
+													// Use marker animation to drop the icons incrementally on the map.
+
+													var centerPoint = new google.maps.LatLng(data[i].latitude, data[i].longitude);
+
+													markers[i] = new google.maps.Marker({
+													data: data[i],
+													position: centerPoint,
+													animation: google.maps.Animation.DROP,
+													icon: markerIcon
+													});
+													// If the user clicks a hotel marker, show the details of that hotel
+													// in an info window.
+													markers[i].placeResult = results[i];
+													google.maps.event.addListener(markers[i], 'click', showInfoWindow);
+													setTimeout(dropMarker(i), i * 100);
+													addResult(markers[i], i);
+													}
+								            }
+								       });
+							      } 
+							      else {
+							        alert("Geocode was not successful for the following reason: " + status);
+							      }
+							    });
+					          }
+					        });
+					      }
+
+					      function clearMarkers() {
+					        for (var i = 0; i < markers.length; i++) {
+					          if (markers[i]) {
+					            markers[i].setMap(null);
+					          }
+					        }
+					        markers = [];
+					      }
+
+					      function dropMarker(i) {
+					        return function() {
+					          markers[i].setMap(map);
+					        };
+					      }
+
+					      function addResult(data, i) {
+					      	result = data.placeResult;
+					        var results = document.getElementById('results');
+					        var markerLetter = String.fromCharCode('A'.charCodeAt(0) + (i % 26));
+					        var markerIcon = MARKER_PATH + markerLetter + '.png';
+
+					        var tr = document.createElement('tr');
+					        tr.style.backgroundColor = (i % 2 === 0 ? '#F0F0F0' : '#FFFFFF');
+					        tr.style.color = '#000';
+					        tr.onclick = function() {
+					          google.maps.event.trigger(markers[i], 'click');
+					        };
+
+					        var iconTd = document.createElement('td');
+					        var nameTd = document.createElement('td');
+					        var icon = document.createElement('img');
+					        icon.src = markerIcon;
+					        icon.setAttribute('class', 'placeIcon');
+					        var name = document.createTextNode(data.data.name+"   "+data.data.address);
+					        iconTd.appendChild(icon);
+					        nameTd.appendChild(name);
+					        tr.appendChild(iconTd);
+					        tr.appendChild(nameTd);
+					        results.appendChild(tr);
+					      }
+
+					      function clearResults() {
+					        var results = document.getElementById('results');
+					        while (results.childNodes[0]) {
+					          results.removeChild(results.childNodes[0]);
+					        }
+					      }
+
+					      // Get the place details for a hotel. Show the information in an info window,
+					      // anchored on the marker for the hotel that the user selected.
+					      function showInfoWindow() {
+					      	debugger;
+					        var marker = this;
+					        places.getDetails({placeId: marker.placeResult.place_id},
+					            function(place, status) {
+					              if (status !== google.maps.places.PlacesServiceStatus.OK) {
+					                return;
+					              }
+					              infoWindow.open(map, marker);
+					              buildIWContent(place);
+					            });
+					      }
+
+					      // Load the place information into the HTML elements used by the info window.
+					      function buildIWContent(place) {
+					      	debugger;
+					        document.getElementById('iw-icon').innerHTML = '<img class="hotelIcon" ' +
+					            'src="' + place.icon + '"/>';
+					        document.getElementById('iw-url').innerHTML = '<b><a href="' + place.url +
+					            '">' + place.name + '</a></b>';
+					        document.getElementById('iw-address').textContent = place.vicinity;
+
+					        if (place.formatted_phone_number) {
+					          document.getElementById('iw-phone-row').style.display = '';
+					          document.getElementById('iw-phone').textContent =
+					              place.formatted_phone_number;
+					        } else {
+					          document.getElementById('iw-phone-row').style.display = 'none';
+					        }
+
+					        // Assign a five-star rating to the hotel, using a black star ('&#10029;')
+					        // to indicate the rating the hotel has earned, and a white star ('&#10025;')
+					        // for the rating points not achieved.
+					        if (place.rating) {
+					          var ratingHtml = '';
+					          for (var i = 0; i < 5; i++) {
+					            if (place.rating < (i + 0.5)) {
+					              ratingHtml += '&#10025;';
+					            } else {
+					              ratingHtml += '&#10029;';
+					            }
+					          document.getElementById('iw-rating-row').style.display = '';
+					          document.getElementById('iw-rating').innerHTML = ratingHtml;
+					          }
+					        } else {
+					          document.getElementById('iw-rating-row').style.display = 'none';
+					        }
+
+					        // The regexp isolates the first part of the URL (domain plus subdomain)
+					        // to give a short URL for displaying in the info window.
+					        if (place.website) {
+					          var fullUrl = place.website;
+					          var website = hostnameRegexp.exec(place.website);
+					          if (website === null) {
+					            website = 'http://' + place.website + '/';
+					            fullUrl = website;
+					          }
+					          document.getElementById('iw-website-row').style.display = '';
+					          document.getElementById('iw-website').textContent = website;
+					        } else {
+					          document.getElementById('iw-website-row').style.display = 'none';
+					        }
+					      }
+							
+					    </script>
 					</section>
 
 				<!-- One -->
@@ -187,9 +534,7 @@
 					</section>
 
 			</div>
-
 		<!-- Scripts -->
-			<script src="/../js/jquery.min.js"></script>
 			<script src="/../js/jquery.scrollex.min.js"></script>
 			<script src="/../js/jquery.scrolly.min.js"></script>
 			<script src="/../js/skel.min.js"></script>
