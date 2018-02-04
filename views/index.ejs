@@ -15,7 +15,7 @@
 		<!--[if lte IE 8]><link rel="stylesheet" href="/../css/ie8.css" /><![endif]-->
 		<style>
       #map {
-        height: 550px;
+        height: 650px;
       }
       html, body {
         height: 100%;
@@ -32,25 +32,15 @@
         position: absolute;
         height: 470px;
         overflow: auto;
-        top: 50px;
+        top: 100px;
         cursor: pointer;
         overflow-x: hidden;
-      }
-      #findhotels {
-        position: relative;
-        text-align: right;
-        width: 100px;
-        font-size: 14px;
-        padding: 4px;
-        z-index: 5;
-        background-color: #fff;
-        color: #000;
       }
       #locationField {
         position: absolute;
         width: 250px;
         height: 1.7em;
-        top: 0px;
+        top: 60px;
         z-index: 5;
         background-color: #fff;
         color: #000;
@@ -122,14 +112,14 @@
 							    <input type="radio" id="type2" name="filter" value="rating">
 							    	<label for="type2" style="color: #000">Rating</label>
 							  </div>
-							<i id="isMale" onclick="toggle('isMale')" value="0" class="fa fa-male " style="font-size:24px; cursor:pointer"></i>&ensp;
-							<i id="isFemale"  onclick="toggle('isFemale')" value="0" class="fa fa-female" style="font-size:24px; cursor:pointer"></i>&ensp;
+							&ensp;<i id="isMale" onclick="toggle('isMale')" value="1" class="fa fa-male " style="font-size:24px;  color:red; cursor:pointer"></i>&ensp;
+							<i id="isFemale"  onclick="toggle('isFemale')" value="1" class="fa fa-female" style="font-size:24px; color:red; cursor:pointer"></i>&ensp;
 							<i id="isunisex"  onclick="toggle('isunisex')" value="0" class="fa fa-street-view" style="font-size:24px; cursor:pointer"></i>&ensp;
 							<i id="isAccessible"  onclick="toggle('isAccessible')" value="0" class="fa fa-wheelchair" style="font-size:24px; cursor:pointer"></i>&ensp;
 							<i id="isParking"  onclick="toggle('isParking')" value="0" class="fa fa-car" style="font-size:24px; cursor:pointer"></i>&ensp;
 							<i id="isChanging"  onclick="toggle('isChanging')" value="0" class="fa fa-home" style="font-size:24px; cursor:pointer"></i>&ensp;
 							<!-- <i class="fa fa-bathtub" style="font-size:24px; cursor:pointer"></i>&ensp; -->
-							<i id="isWater"  onclick="toggle('isWater')" value="0" class="fa fa-tint" style="font-size:24px; cursor:pointer"></i>&ensp;
+							<i id="isWater"  onclick="toggle('isWater')" value="0" class="fa fa-tint" style="font-size:24px; cursor:pointer"></i>
 							</form>
 					    </div>
 
@@ -257,6 +247,7 @@
 					      			document.getElementById("isWater").setAttribute("value", "0");
 				      			}
 			      			}
+			      			onPlaceChanged();
 					      }
 
 					      function initMap() {
@@ -315,10 +306,16 @@
 					            // assign a letter of the alphabetic to each marker icon.
 					            
 					            var fId = document.getElementById('type1').value;
-
 					            if (document.getElementById('type2').checked) {
 									fId = document.getElementById('type2').value;
 								}
+								var isMale = document.getElementById('isMale').getAttribute('value');
+								var isFemale = document.getElementById('isFemale').getAttribute('value');
+								var isunisex = document.getElementById('isunisex').getAttribute('value');
+								var isAccessible = document.getElementById('isAccessible').getAttribute('value');
+								var isParking = document.getElementById('isParking').getAttribute('value');
+								var isChanging = document.getElementById('isChanging').getAttribute('value');
+								var isWater = document.getElementById('isWater').getAttribute('value');
 
 								var data =[];
 
@@ -330,7 +327,7 @@
 								        url:"/nearby",
 								        type:"get",
 								        async: false,
-								        data:{latitude: results[0].geometry.location.lat(), longitude: results[0].geometry.location.lng(), filter: fId},
+								        data:{latitude: results[0].geometry.location.lat(), longitude: results[0].geometry.location.lng(), filter: fId, isMale: isMale, isFemale: isFemale, isUnisex: isunisex, isParkingAvailable: isParking, isAccessibilityFeature: isAccessible, isAdultChangeFacilityAvailable: isChanging, isWaterSuitableForDrinking: isWater},
 								        success:function(res){
 								            // Check browser support
 								            	data = res;

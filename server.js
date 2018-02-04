@@ -161,7 +161,7 @@ loginAcc.get(function(req,res,next){
 //         return next("Cannot Connect");
 //       }
 
-//       var query = conn.query("SELECT name FROM classroomshoppers.userdetail WHERE emailId = '"+emailId+"' and password = '"+password+"' ", function(err,rows){
+//       var query = conn.query("SELECT name FROM classroomshoppers.userdetail WHERE emailId = '"+emailId+"'  and password = '"+password+"' ", function(err,rows){
 //           if(err){
 //             console.log(err);
 //               return next("Mysql error, check your query");
@@ -270,6 +270,13 @@ nearby.get(function(req,res,next){
     var x = req.query.latitude;
     var y = req.query.longitude;
     var z = req.query.filter;
+    var isMale = req.query.isMale;
+    var isFemale = req.query.isFemale;
+    var isUnisex = req.query.isUnisex;
+    var isAccessibilityFeature = req.query.isAccessibilityFeature;
+    var isParkingAvailable = req.query.isParkingAvailable;
+    var isAdultChangeFacilityAvailable = req.query.isAdultChangeFacilityAvailable;
+    var isWaterSuitableForDrinking = req.query.isWaterSuitableForDrinking;
 
     //inserting into mysql
     req.getConnection(function (err, conn){
@@ -277,7 +284,7 @@ nearby.get(function(req,res,next){
         if (err) return next("Cannot Connect");
 
         if(z=='nearest'){
-          var query = conn.query("Select *, (( "+x+" -latitude)*( "+x+" -latitude) + ( "+y+" -longitude)*( "+y+" -longitude)) as distance from janshauch.toilet Where (( "+x+" -latitude)*( "+x+" -latitude) + ( "+y+" -longitude)*( "+y+" -longitude)) < 0.014*0.014 ORDER BY distance desc", function(err, rows){
+          var query = conn.query("Select *, (( "+x+" -latitude)*( "+x+" -latitude) + ( "+y+" -longitude)*( "+y+" -longitude)) as distance from janshauch.toilet Where (( "+x+" -latitude)*( "+x+" -latitude) + ( "+y+" -longitude)*( "+y+" -longitude)) < 0.014*0.014  AND isMale>="+isMale+" AND isFemale>="+isFemale+" AND isUnisex>="+isUnisex+" AND isAccessibilityFeature>="+isAccessibilityFeature+" AND isParkingAvailable>="+isParkingAvailable+" AND isAdultChangeFacilityAvailable>="+isAdultChangeFacilityAvailable+" AND isWaterSuitableForDrinking>="+isWaterSuitableForDrinking+" ORDER BY distance desc", function(err, rows){
            if(err){
                 console.log(err);
                 return next("Mysql error, check your query");
@@ -286,8 +293,8 @@ nearby.get(function(req,res,next){
         });
         }
         else{
-          var query = conn.query("Select *, (( "+x+" -T.latitude)*( "+x+" -T.latitude) + ( "+y+" -T.longitude)*( "+y+" -T.longitude)) as distance from janshauch.toilet as T, janshauch.feedback as R Where (( "+x+" -T.latitude)*( "+x+" -T.latitude) + ( "+y+" -T.longitude)*( "+y+" -T.longitude)) < 0.014*0.014 AND T.latitude=R.latitude AND T.longitude=R.longitude ORDER BY distance desc", function(err, rows){
-            // Select *, (21.25-T.latitude)*(21.25-T.latitude) + (81.62-T.longitude)*(81.62-T.longitude) as distance from janshauch.toilet as T, janshauch.feedback as R Where (21.25-T.latitude)*             (21.25-T.latitude) + (81.62-T.longitude)*(81.62-T.longitude) <  0.014*0.014 AND T.latitude=R.latitude AND T.longitude=R.longitude ORDER BY distance desc;          
+          var query = conn.query("Select *, (( "+x+" -T.latitude)*( "+x+" -T.latitude) + ( "+y+" -T.longitude)*( "+y+" -T.longitude)) as distance from janshauch.toilet as T, janshauch.feedback as R Where (( "+x+" -T.latitude)*( "+x+" -T.latitude) + ( "+y+" -T.longitude)*( "+y+" -T.longitude)) < 0.014*0.014  AND T.latitude=R.latitude  AND T.longitude=R.longitude  AND isMale>="+isMale+" AND isFemale>="+isFemale+" AND isUnisex>="+isUnisex+" AND isAccessibilityFeature>="+isAccessibilityFeature+" AND isParkingAvailable>="+isParkingAvailable+" AND isAdultChangeFacilityAvailable>="+isAdultChangeFacilityAvailable+" AND isWaterSuitableForDrinking>="+isWaterSuitableForDrinking+" ORDER BY distance desc", function(err, rows){
+            // Select *, (21.25-T.latitude)*(21.25-T.latitude) + (81.62-T.longitude)*(81.62-T.longitude) as distance from janshauch.toilet as T, janshauch.feedback as R Where (21.25-T.latitude)*             (21.25-T.latitude) + (81.62-T.longitude)*(81.62-T.longitude) <  0.014*0.014  AND T.latitude=R.latitude  AND T.longitude=R.longitude ORDER BY distance desc;          
            if(err){
                 console.log(err);
                 return next("Mysql error, check your query");
