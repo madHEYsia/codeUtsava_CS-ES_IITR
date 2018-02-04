@@ -331,6 +331,13 @@ nearby.get(function(req,res,next){
 // // });
 
 
+var trip = router.route('/trip');
+
+trip.get(function(req,res,next){
+  res.render('trip');
+});
+
+
 // // -----------------------------------------------------------------------------
 
 
